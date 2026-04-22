@@ -339,4 +339,6 @@ with app.app_context():
         print(f"Added {len(products)} products with INR prices.")
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001, ssl_context=('adhoc'))
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
