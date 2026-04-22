@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="mb-4">{{ category|capitalize }} Collection</h1>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">₹{{ "%.2f"|format(product.price) }}</p>
+                <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary">View Details</a>
+                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-success">Add to Cart</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>No products in this category yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

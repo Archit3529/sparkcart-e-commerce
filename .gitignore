@@ -1,0 +1,61 @@
+# Python bytecode & cache (कभी ज़रूरत नहीं होती)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment (बहुत बड़ा फोल्डर, दूसरे के कंप्यूटर पर काम नहीं करेगा)
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Environment variables (गोपनीय जानकारी – इसे कभी अपलोड न करें!)
+.env
+.flaskenv
+*.env
+config.local.py
+
+# IDE settings (हर IDE की अपनी सेटिंग होती है, उसे शेयर न करें)
+.vscode/
+.idea/
+*.sublime-*
+*.swp
+.DS_Store   # Mac की hidden file
+Thumbs.db   # Windows की thumbnail cache
+
+# Database files (अगर SQLite use कर रहे हैं)
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Logs & temporary files
+*.log
+*.tmp
+*.pid
+*.seed
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+
+# Flask specific
+flask_session/
+uploads/
+static/uploads/   # अगर user uploads हैं तो उन्हें भी ignore करें
+
+# Docker (अगर use करें)
+.dockerignore
+docker-compose.override.yml
+
+# Secrets (खासकर payment gateway keys)
+secrets/
+keys/
+*.pem
+*.key

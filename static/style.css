@@ -1,0 +1,462 @@
+/* ============================================
+   COMPLETE E-COMMERCE CSS WITH LIGHT/DARK THEME
+   ============================================ */
+
+/* ---------- Google Fonts ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+
+/* ========== LIGHT THEME (DEFAULT) ========== */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #565959;
+    --border-color: #e0e0e0;
+    --navbar-bg: #131921;
+    --navbar-text: #ffffff;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --hover-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    --primary-blue: #2874f0;
+    --primary-orange: #ff9900;
+    --price-green: #388e3c;
+    --input-bg: #ffffff;
+    --alert-bg: #f8d7da;
+    --transition: all 0.2s ease;
+}
+
+/* ========== DARK THEME ========== */
+body.dark-theme {
+    --bg-primary: #0a0c10;
+    --bg-secondary: #13161c;
+    --bg-card: #1e2229;
+    --text-primary: #e6edf3;
+    --text-secondary: #b0b8c5;
+    --border-color: #2d323c;
+    --navbar-bg: #13161c;
+    --navbar-text: #ffffff;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    --hover-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    --primary-blue: #3b82f6;
+    --primary-orange: #f97316;
+    --price-green: #4ade80;
+    --input-bg: #1a1f26;
+    --alert-bg: #2c1e1e;
+}
+
+/* ---------- Global Reset ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+    font-size: 14px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ---------- Typography ---------- */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--text-primary);
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+    background-color: var(--navbar-bg) !important;
+    box-shadow: var(--card-shadow);
+    padding: 0.75rem 1rem;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: -0.5px;
+    color: var(--navbar-text) !important;
+    transition: var(--transition);
+}
+
+.navbar-brand:hover {
+    color: var(--primary-orange) !important;
+}
+
+.navbar-nav .nav-link {
+    color: var(--navbar-text) !important;
+    font-weight: 500;
+    margin: 0 0.25rem;
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: var(--primary-orange) !important;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    border-radius: 12px;
+    padding: 0.5rem 0;
+    margin-top: 8px;
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-secondary);
+    color: var(--primary-blue);
+    padding-left: 1.8rem;
+}
+
+/* ---------- Category Sections ---------- */
+.category-section {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.category-section:hover {
+    box-shadow: var(--hover-shadow);
+}
+
+.category-section h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+    border-left: 4px solid var(--primary-blue);
+    padding-left: 12px;
+}
+
+.category-section .btn-outline-primary {
+    border-radius: 30px;
+    padding: 0.3rem 1.2rem;
+    font-weight: 500;
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+    transition: var(--transition);
+}
+
+.category-section .btn-outline-primary:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+/* ---------- Product Cards ---------- */
+.card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--bg-card);
+    transition: var(--transition);
+    box-shadow: var(--card-shadow);
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--hover-shadow);
+}
+
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+    background-color: var(--bg-secondary);
+    padding: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.02);
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    display: -webkit-box;
+    
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 2.4rem;
+    line-height: 1.2;
+}
+
+.card-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--price-green);
+    margin-bottom: 1rem;
+}
+
+.card .btn {
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    transition: var(--transition);
+}
+
+.card .btn-primary {
+    background-color: var(--primary-blue);
+    border: none;
+}
+
+.card .btn-primary:hover {
+    background-color: #1e5ec7;
+    transform: scale(0.98);
+}
+
+.card .btn-success {
+    background-color: var(--primary-orange);
+    border: none;
+}
+
+.card .btn-success:hover {
+    background-color: #e05a0e;
+    transform: scale(0.98);
+}
+
+/* ---------- Product Detail Page ---------- */
+.product-detail-img {
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    max-width: 100%;
+    background-color: var(--bg-card);
+    padding: 1rem;
+}
+
+.product-detail-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.product-detail-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--price-green);
+    margin: 1rem 0;
+}
+
+.product-detail-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 1rem 0;
+    line-height: 1.6;
+}
+
+/* ---------- Cart Table ---------- */
+.table {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    color: var(--text-primary);
+}
+
+.table thead th {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: none;
+    padding: 1rem;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.quantity-control .btn {
+    background-color: var(--bg-secondary);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    font-weight: bold;
+    transition: var(--transition);
+    color: var(--text-primary);
+}
+
+.quantity-control .btn:hover {
+    background-color: var(--primary-blue);
+    color: white;
+}
+
+/* ---------- Checkout & Order Confirmation ---------- */
+.checkout-form, .confirmation-card {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+}
+
+.checkout-form label {
+    font-weight: 600;
+    margin-top: 0.5rem;
+    color: var(--text-primary);
+}
+
+.form-control, textarea {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+}
+
+.order-total {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--price-green);
+    text-align: right;
+    border-top: 2px solid var(--border-color);
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* ---------- Alerts (Flash Messages) ---------- */
+.alert {
+    background-color: var(--alert-bg);
+    border-left: 4px solid var(--primary-blue);
+    color: var(--text-primary);
+    border-radius: 12px;
+    font-weight: 500;
+    box-shadow: var(--card-shadow);
+}
+
+/* ---------- Theme Toggle Button ---------- */
+#themeToggle {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 30px;
+    padding: 0.3rem 1rem;
+    transition: var(--transition);
+}
+
+#themeToggle:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+/* ---------- Responsive (Mobile) ---------- */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.4rem;
+    }
+    
+    .card-img-top {
+        height: 150px;
+    }
+    
+    .category-section {
+        padding: 1rem;
+    }
+    
+    .product-detail-title {
+        font-size: 1.4rem;
+    }
+    
+    .product-detail-price {
+        font-size: 1.5rem;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    /* Stack cart table on mobile */
+    .table thead {
+        display: none;
+    }
+    
+    .table tbody td {
+        display: block;
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .table tbody td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: 45%;
+        text-align: left;
+        font-weight: 600;
+    }
+}
+
+/* ---------- Utility Classes ---------- */
+.text-primary-custom {
+    color: var(--primary-blue);
+}
+
+.bg-light-custom {
+    background-color: var(--bg-secondary);
+}
+
+.btn-amazon {
+    background-color: var(--primary-orange);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-amazon:hover {
+    background-color: #e68a00;
+}
+
+.btn-flipkart {
+    background-color: var(--primary-blue);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 30px;
+}

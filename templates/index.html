@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="mb-4">Welcome to SparkCart</h1>
+<p class="lead">Shop by category</p>
+
+{% for cat_key, cat_name in categories.items() %}
+<div class="category-section mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>{{ cat_name }}</h2>
+        <a href="{{ url_for('category_view', category_name=cat_key) }}" class="btn btn-outline-primary btn-sm">View All {{ cat_name }} →</a>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for product in category_products[cat_key][:4] %}  {# show only first 4 #}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">₹{{ "%.2f"|format(product.price) }}</p>
+                    <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary btn-sm">View</a>
+                    <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-success btn-sm">Add to Cart</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col">No products in this category yet.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

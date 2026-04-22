@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Complete Your Payment</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Order Summary</h5>
+                    <p><strong>Order ID:</strong> {{ order.id }}</p>
+                    <p><strong>Total Amount:</strong> {{ total|inr }}</p>
+                    <button id="rzp-button" class="btn btn-success btn-lg w-100">
+                        Pay Now {{ total|inr }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "{{ razorpay_key }}",
+        "amount": {{ razorpay_order.amount }},
+        "currency": "INR",
+        "name": "SparkCart",
+        "description": "Order #{{ order.id }}",
+        "order_id": "{{ razorpay_order.id }}",
+        "handler": function (response) {
+            fetch('/payment-success', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = "/order/" + data.order_id;
+                } else {
+                    alert("Payment verification failed. Please contact support.");
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+        },
+        "prefill": {
+            "name": "{{ current_user.username }}",
+            "email": "{{ current_user.email }}"
+        },
+        "theme": {
+            "color": "#2874f0"
+        }
+    };
+    
+    var rzp = new Razorpay(options);
+    document.getElementById('rzp-button').onclick = function(e) {
+        rzp.open();
+        e.preventDefault();
+    }
+</script>
+{% endblock %}

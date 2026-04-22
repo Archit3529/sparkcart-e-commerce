@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="mb-4">🛒 Your Shopping Cart</h1>
+
+{% if cart_items %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td data-label="Product">{{ item.product.name }}</td>
+                <td data-label="Quantity">
+                    <div class="quantity-control d-flex align-items-center gap-2">
+                        <a href="{{ url_for('update_cart', product_id=item.product.id, quantity=item.quantity-1) }}" class="btn btn-sm btn-outline-secondary">−</a>
+                        <span class="mx-2">{{ item.quantity }}</span>
+                        <a href="{{ url_for('update_cart', product_id=item.product.id, quantity=item.quantity+1) }}" class="btn btn-sm btn-outline-secondary">+</a>
+                    </div>
+                </td>
+                <td data-label="Price">₹{{ "%.2f"|format(item.product.price) }}</td>
+                <td data-label="Total">₹{{ "%.2f"|format(item.total) }}</td>
+                <td data-label="Actions">
+                    <a href="{{ url_for('remove_from_cart', product_id=item.product.id) }}" class="btn btn-danger btn-sm">Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                <td colspan="2"><strong>₹{{ "%.2f"|format(total) }}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<div class="d-flex justify-content-between mt-3">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">← Continue Shopping</a>
+    <a href="{{ url_for('checkout') }}" class="btn btn-success">Proceed to Checkout →</a>
+</div>
+
+{% else %}
+<div class="alert alert-info text-center">
+    <h4>Your cart is empty!</h4>
+    <p>Looks like you haven't added anything yet.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Start Shopping</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Order Confirmation</h1>
+<p>Thank you for your order! Order #{{ order.id }}</p>
+<p>Date: {{ order.date.strftime('%Y-%m-%d %H:%M') }}</p>
+<p>Total: ₹{{ "%.2f"|format(order.total) }}</p>
+<h3>Items:</h3>
+<ul class="list-group">
+    {% for item in order.items %}
+    <li class="list-group-item">{{ item.product.name }} x {{ item.quantity }} = ₹{{ "%.2f"|format(item.price * item.quantity) }}</li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+{% endblock %}
