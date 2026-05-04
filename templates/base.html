@@ -8,31 +8,34 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Custom CSS (Light/Dark Theme) -->
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Preload speech synthesis -->
+    <script>
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+    }
+    </script>
 </head>
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">🛍️ SparkCart</a>
+            <a class="navbar-brand" style="color: #c56be0;" href="{{ url_for('index') }}">🛍️ SparkCart</a> 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-                    
-                    <!-- Categories Dropdown -->
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">🏠 Home</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Categories
-                        </a>
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">📂 Categories</a>
                         <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='mens') }}">👔 Men's Wear</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='womens') }}">👗 Women's Wear</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='kids') }}">🧸 Kids Wear</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='mens') }}">👔 Men's</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='womens') }}">👗 Women's</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='kids') }}">🧸 Kids</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='mobiles') }}">📱 Mobiles</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='electronics') }}">💻 Electronics</a></li>
@@ -40,15 +43,17 @@
                             <li><a class="dropdown-item" href="{{ url_for('category_view', category_name='toys') }}">🎮 Toys</a></li>
                         </ul>
                     </li>
-                    
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('view_cart') }}">🛒 Cart</a></li>
-                    
-                    <!-- Theme Toggle Button -->
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}">🛒 Cart ({{ cart_count }})</a></li>
                     <li class="nav-item">
-                        <button id="themeToggle" class="btn btn-sm btn-outline-secondary" style="margin-left: 10px;">🌙 Dark</button>
+                        <div class="theme-switch-wrapper">
+                            <label class="theme-switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </li>
-                    
                     {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('orders') }}">📋 My Orders</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">🚪 Logout</a></li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">🔐 Login</a></li>
@@ -74,35 +79,335 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Bootstrap JS Bundle (for dropdowns, togglers, alerts) -->
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3" style="background-color: var(--navbar-bg); color: var(--navbar-text); margin-top: 50px !important;">
+        <div class="container text-center">
+            <p class="mb-0">© 2024 SparkCart | Developed by <strong>Archit Kumar, Uvesh Siddique</strong></p>
+        </div>
+    </footer>
+
     <!-- Theme Toggle JavaScript -->
     <script>
-        const toggleBtn = document.getElementById('themeToggle');
+        const toggleSwitch = document.getElementById('darkModeToggle');
         const body = document.body;
-        
-        // Load saved theme from localStorage
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
             body.classList.add('dark-theme');
-            toggleBtn.textContent = '☀️ Light';
+            toggleSwitch.checked = true;
         } else {
             body.classList.remove('dark-theme');
-            toggleBtn.textContent = '🌙 Dark';
+            toggleSwitch.checked = false;
         }
-        
-        // Toggle theme on button click
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            if (body.classList.contains('dark-theme')) {
+        toggleSwitch.addEventListener('change', function(e) {
+            if (e.target.checked) {
+                body.classList.add('dark-theme');
                 localStorage.setItem('theme', 'dark');
-                toggleBtn.textContent = '☀️ Light';
             } else {
+                body.classList.remove('dark-theme');
                 localStorage.setItem('theme', 'light');
-                toggleBtn.textContent = '🌙 Dark';
             }
         });
     </script>
+
+    <!-- Velvet Theme Particles -->
+    <script>
+        function createVelvetParticles() {
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'velvet-particle';
+                const size = Math.random() * 6 + 2;
+                particle.style.cssText = `position:fixed;width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:velvetPulse ${Math.random()*4+3}s infinite;animation-delay:${Math.random()*5}s;`;
+                document.body.appendChild(particle);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', createVelvetParticles);
+    </script>
+
+    <!-- Command Panel & Features Styles -->
+    <style>
+        @keyframes orbPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(156,58,176,0.7); } 50% { box-shadow: 0 0 0 15px rgba(156,58,176,0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes velvetPulse { 0%,100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.6; transform: scale(1.2); } }
+        @keyframes keyFloat { 0%,100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+        @keyframes fadeUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
+        @keyframes rippleExpand { 0% { transform: scale(0.5); opacity: 0.8; } 100% { transform: scale(8); opacity: 0; } }
+        @keyframes fadeOutScale { 0% { opacity: 1; transform: translateX(-50%) scale(1); } 100% { opacity: 0; transform: translateX(-50%) scale(0.8); } }
+        @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .command-orb { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, #7b2d91, #c56be0); border-radius: 50%; cursor: pointer; z-index: 1001; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: all 0.3s; animation: orbPulse 2s infinite; }
+        .command-orb:hover { transform: scale(1.1); box-shadow: 0 0 25px rgba(197,107,224,0.6); }
+        .command-panel { position: fixed; bottom: 100px; right: 30px; width: 350px; background: rgba(26,15,28,0.98); backdrop-filter: blur(15px); border-radius: 25px; border: 1px solid rgba(156,58,176,0.4); box-shadow: 0 15px 35px rgba(0,0,0,0.5); z-index: 1000; display: none; animation: slideIn 0.3s ease; overflow: hidden; }
+        .command-panel.show { display: block; }
+        .panel-header { background: linear-gradient(135deg, #7b2d91, #9c3ab0); padding: 12px 15px; color: white; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .close-panel { background: none; border: none; color: white; font-size: 20px; cursor: pointer; opacity: 0.7; }
+        .command-input-area { padding: 15px; border-bottom: 1px solid rgba(156,58,176,0.3); }
+        .command-input { width: 100%; background: rgba(15,7,20,0.8); border: 1px solid #9c3ab0; border-radius: 30px; padding: 10px 15px; color: #c56be0; }
+        .quick-commands { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 15px; }
+        .cmd-btn { background: linear-gradient(135deg, #2d1b2e, #1a0f1c); border: 1px solid rgba(156,58,176,0.5); border-radius: 12px; padding: 8px 5px; cursor: pointer; text-align: center; color: #c56be0; font-size: 20px; transition: all 0.2s; }
+        .cmd-btn:hover { transform: translateY(-2px); background: linear-gradient(135deg, #9c3ab0, #c56be0); color: white; box-shadow: 0 5px 15px rgba(156,58,176,0.4); }
+        .cmd-label { font-size: 10px; margin-top: 3px; display: block; color: #b0a8b8; }
+        .voice-status { padding: 10px 15px; font-size: 11px; color: #4ade80; text-align: center; border-top: 1px solid rgba(156,58,176,0.3); background: rgba(0,0,0,0.3); }
+        .velvet-particle { position: fixed; background: radial-gradient(circle, #c56be0, #9c3ab0); border-radius: 50%; pointer-events: none; z-index: 0; animation: velvetPulse 4s infinite; }
+        .velvet-floating-keys { position: fixed; bottom: 20px; right: 20px; font-size: 24px; opacity: 0.3; pointer-events: none; z-index: 0; animation: keyFloat 6s infinite; }
+        .product-voice-btn { background: #7b2d91; border: none; border-radius: 50%; width: 28px; height: 28px; margin-left: 6px; cursor: pointer; color: white; font-size: 12px; transition: 0.2s; }
+        .product-voice-btn:hover { transform: scale(1.1); background: #c56be0; }
+        .theme-switch-wrapper { display: flex; align-items: center; margin-left: 15px; }
+        .theme-switch { display: inline-block; height: 34px; position: relative; width: 60px; }
+        .theme-switch input { display: none; }
+        .slider { background-color: #ccc; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 34px; }
+        .slider:before { background-color: white; bottom: 4px; content: "🌙"; font-size: 18px; display: flex; align-items: center; justify-content: center; height: 26px; left: 4px; position: absolute; transition: .4s; width: 26px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #3b82f6; }
+        input:checked + .slider:before { transform: translateX(26px); content: "☀️"; }
+        body.dark-theme .slider { background-color: #4a5568; }
+        .slider.round { border-radius: 34px; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #2d1b2e; }
+        ::-webkit-scrollbar-thumb { background: #9c3ab0; border-radius: 10px; }
+        @media (max-width: 480px) { .command-panel { width: 300px; right: 20px; bottom: 90px; } .quick-commands { grid-template-columns: repeat(3, 1fr); } }
+        .product-card, .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .product-card:hover, .card:hover { transform: translateY(-5px); }
+    </style>
+
+    <!-- Floating Elements -->
+    <div class="velvet-floating-keys">🗝️</div>
+
+    <!-- ========== FINAL CORRECTED FEATURES (NO PRICE CONFLICT) ========== -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("🎨 All features loading (fixed price handling)...");
+
+        // ========== SPEAK FUNCTION ==========
+        window.instantSpeak = function(text) {
+            if (!window.speechSynthesis) return;
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } catch(e) {}
+        };
+
+        // ========== COMMAND PANEL ==========
+        const orbHTML = document.createElement('div');
+        orbHTML.innerHTML = `
+            <div class="command-orb" id="commandOrbBtn">⚡</div>
+            <div class="command-panel" id="commandPanel">
+                <div class="panel-header"><h4>⚡ SPARK COMMAND</h4><button class="close-panel" id="closePanel">✕</button></div>
+                <div class="command-input-area"><input type="text" id="commandInput" class="command-input" placeholder="Type command... (home, cart, men...)" autocomplete="off"></div>
+                <div class="quick-commands">
+                    <div class="cmd-btn" data-cmd="home">🏠<span class="cmd-label">Home</span></div>
+                    <div class="cmd-btn" data-cmd="cart">🛒<span class="cmd-label">Cart</span></div>
+                    <div class="cmd-btn" data-cmd="login">🔐<span class="cmd-label">Login</span></div>
+                    <div class="cmd-btn" data-cmd="orders">📋<span class="cmd-label">Orders</span></div>
+                    <div class="cmd-btn" data-cmd="men">👔<span class="cmd-label">Men</span></div>
+                    <div class="cmd-btn" data-cmd="women">👗<span class="cmd-label">Women</span></div>
+                    <div class="cmd-btn" data-cmd="kids">🧸<span class="cmd-label">Kids</span></div>
+                    <div class="cmd-btn" data-cmd="mobiles">📱<span class="cmd-label">Mobiles</span></div>
+                    <div class="cmd-btn" data-cmd="electronics">💻<span class="cmd-label">Electronics</span></div>
+                    <div class="cmd-btn" data-cmd="appliances">🏠<span class="cmd-label">Home</span></div>
+                    <div class="cmd-btn" data-cmd="toys">🎮<span class="cmd-label">Toys</span></div>
+                    <div class="cmd-btn" data-cmd="register">📝<span class="cmd-label">Register</span></div>
+                </div>
+                <div class="voice-status" id="voiceStatus">🎤 Click any button or type command</div>
+            </div>
+        `;
+        document.body.appendChild(orbHTML);
+
+        const orbBtn = document.getElementById('commandOrbBtn');
+        const panel = document.getElementById('commandPanel');
+        const closeBtn = document.getElementById('closePanel');
+        if (orbBtn) orbBtn.onclick = () => { panel.classList.toggle('show'); if (panel.classList.contains('show')) document.getElementById('commandInput')?.focus(); };
+        if (closeBtn) closeBtn.onclick = () => panel.classList.remove('show');
+        document.addEventListener('click', (e) => { if (panel && orbBtn && !panel.contains(e.target) && !orbBtn.contains(e.target) && panel.classList.contains('show')) panel.classList.remove('show'); });
+
+        const cmdMap = {
+            'home': '/', 'h': '/', 'cart': "{{ url_for('cart') }}", 'c': "{{ url_for('cart') }}",
+            'login': "{{ url_for('login') }}", 'l': "{{ url_for('login') }}", 'register': "{{ url_for('register') }}", 'reg': "{{ url_for('register') }}",
+            'orders': "{{ url_for('orders') }}", 'ord': "{{ url_for('orders') }}", 'men': "{{ url_for('category_view', category_name='mens') }}", 'm': "{{ url_for('category_view', category_name='mens') }}",
+            'women': "{{ url_for('category_view', category_name='womens') }}", 'w': "{{ url_for('category_view', category_name='womens') }}", 'kids': "{{ url_for('category_view', category_name='kids') }}", 'k': "{{ url_for('category_view', category_name='kids') }}",
+            'mobiles': "{{ url_for('category_view', category_name='mobiles') }}", 'mobile': "{{ url_for('category_view', category_name='mobiles') }}", 'electronics': "{{ url_for('category_view', category_name='electronics') }}", 'elec': "{{ url_for('category_view', category_name='electronics') }}",
+            'appliances': "{{ url_for('category_view', category_name='home_appliances') }}", 'home': "{{ url_for('category_view', category_name='home_appliances') }}", 'toys': "{{ url_for('category_view', category_name='toys') }}", 'toy': "{{ url_for('category_view', category_name='toys') }}"
+        };
+
+        function executeCommand(cmd) {
+            const url = cmdMap[cmd.toLowerCase()];
+            const statusDiv = document.getElementById('voiceStatus');
+            if (url) {
+                if (statusDiv) { statusDiv.innerHTML = `✅ Executing: ${cmd}...`; statusDiv.style.color = '#4ade80'; }
+                instantSpeak(cmd);
+                setTimeout(() => { window.location.href = url; }, 200);
+            } else {
+                if (statusDiv) {
+                    statusDiv.innerHTML = `❌ Unknown: "${cmd}". Try: home, cart, men, women, kids, mobiles, electronics, toys, login, orders`;
+                    statusDiv.style.color = '#ff6b6b';
+                    setTimeout(() => { statusDiv.innerHTML = '🎤 Click any button or type command'; statusDiv.style.color = '#4ade80'; }, 2000);
+                }
+            }
+        }
+
+        const cmdInput = document.getElementById('commandInput');
+        if (cmdInput) cmdInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { executeCommand(cmdInput.value); cmdInput.value = ''; if (panel) panel.classList.remove('show'); } });
+        document.querySelectorAll('.cmd-btn').forEach(btn => { btn.onclick = () => { executeCommand(btn.getAttribute('data-cmd')); if (panel) panel.classList.remove('show'); }; });
+
+        // ========== PRODUCT VOICE BUTTONS ==========
+        function addProductButtons() {
+            document.querySelectorAll('.product-card, .card').forEach(p => {
+                if (p.querySelector('.product-voice-btn')) return;
+                const name = p.querySelector('.card-title')?.innerText;
+                if (name) {
+                    const btn = document.createElement('button');
+                    btn.className = 'product-voice-btn';
+                    btn.innerHTML = '🔊';
+                    btn.onclick = (e) => { e.stopPropagation(); const price = p.querySelector('.card-text.price, .price')?.innerText || ''; instantSpeak(name + (price ? '. ' + price : '')); };
+                    p.querySelector('.card-body')?.appendChild(btn);
+                }
+            });
+        }
+        addProductButtons();
+        new MutationObserver(() => addProductButtons()).observe(document.body, { childList: true, subtree: true });
+
+        // ========== CONFETTI ON ADD TO CART ==========
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            if (args[0] && args[0].includes('add-to-cart')) {
+                setTimeout(() => {
+                    canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#7b2d91', '#c56be0', '#4ade80', '#ff6b6b', '#ffd700'], startVelocity: 20, decay: 0.9 });
+                    const msg = document.createElement('div');
+                    msg.innerHTML = '🎉✨ Added to Cart! ✨🎉';
+                    msg.style.cssText = 'position:fixed;top:25%;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7b2d91,#c56be0);color:white;padding:15px 30px;border-radius:50px;z-index:9999;font-weight:bold;font-size:18px;box-shadow:0 8px 25px rgba(0,0,0,0.3);animation:fadeOutScale 1.8s ease forwards;';
+                    document.body.appendChild(msg);
+                    setTimeout(() => msg.remove(), 1800);
+                }, 100);
+            }
+            return originalFetch.apply(this, args);
+        };
+
+        // ========== MOUSE TRAIL SPARKLES ==========
+        let lastX = 0, lastY = 0, throttle = false;
+        document.addEventListener('mousemove', (e) => {
+            if (throttle) return;
+            throttle = true;
+            if (Math.abs(e.clientX - lastX) > 15 || Math.abs(e.clientY - lastY) > 15) {
+                const spark = document.createElement('div');
+                spark.innerHTML = '✨';
+                spark.style.cssText = `position:fixed;left:${e.clientX}px;top:${e.clientY}px;font-size:${Math.random()*12+8}px;pointer-events:none;z-index:99999;animation:fadeUp 0.6s forwards;`;
+                document.body.appendChild(spark);
+                setTimeout(() => spark.remove(), 600);
+                lastX = e.clientX; lastY = e.clientY;
+            }
+            setTimeout(() => { throttle = false; }, 30);
+        });
+
+        // ========== CLICK RIPPLE EFFECT ==========
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('button, a, .btn')) return;
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `position:fixed;left:${e.clientX-25}px;top:${e.clientY-25}px;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,#c56be0,#7b2d91);pointer-events:none;z-index:9998;animation:rippleExpand 0.8s forwards;`;
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 800);
+        });
+
+        // ========== TIME-BASED GREETING ==========
+        const hour = new Date().getHours();
+        let greeting = '';
+        if (hour >= 5 && hour < 12) greeting = 'Good Morning! ☀️';
+        else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon! 🌤️';
+        else if (hour >= 17 && hour < 21) greeting = 'Good Evening! 🌙';
+        else greeting = 'Good Night! 🌟';
+        const hero = document.querySelector('.display-4, h1');
+        if (hero && !hero.innerHTML.includes('Good')) { const original = hero.innerHTML; hero.innerHTML = `${greeting}<br><span style="font-size:1.3rem;">${original}`; }
+
+        // ========== PRICE HANDLING (FIXED: NO CONFLICT, CLEAN STRIKE-THROUGH) ==========
+        setTimeout(() => {
+            document.querySelectorAll('.card-text.price, .price').forEach(priceElem => {
+                if (priceElem.getAttribute('data-price-fixed')) return;
+
+                let currentText = priceElem.innerText;
+                
+                // Remove any "???" or mystery markers
+                if (currentText.includes('?') || currentText.includes('❓')) {
+                    const productCard = priceElem.closest('.product-card, .card');
+                    let defaultPrice = 999;
+                    const name = productCard?.querySelector('.card-title')?.innerText || '';
+                    if (name.includes('Shirt')) defaultPrice = 1299;
+                    else if (name.includes('Jeans')) defaultPrice = 2499;
+                    else if (name.includes('Blazer')) defaultPrice = 4999;
+                    else if (name.includes('Hoodie')) defaultPrice = 1899;
+                    currentText = `₹${defaultPrice}`;
+                }
+                
+                // Extract first price number
+                const priceMatch = currentText.match(/₹?(\d+(?:\.\d+)?)/);
+                if (!priceMatch) return;
+                
+                const originalPrice = parseFloat(priceMatch[1]);
+                if (isNaN(originalPrice)) return;
+                
+                // Apply discount randomly (30% chance, like before)
+                const applyDiscount = Math.random() > 0.7 && originalPrice > 100;
+                
+                if (applyDiscount) {
+                    const discount = Math.floor(Math.random() * 35) + 10;
+                    const newPrice = Math.floor(originalPrice * (1 - discount / 100));
+                    priceElem.innerHTML = `<span style="color:#4ade80;">₹${newPrice}</span> <span style="text-decoration:line-through;color:#b0a8b8;font-size:11px;margin-left:5px;">₹${originalPrice}</span> <span style="color:#ff6b6b;font-size:10px;margin-left:5px;">-${discount}%</span>`;
+                } else {
+                    priceElem.innerHTML = `<span style="color:#4ade80;">₹${originalPrice}</span>`;
+                }
+                priceElem.setAttribute('data-price-fixed', 'true');
+                priceElem.style.cursor = 'default';
+            });
+        }, 500);
+
+        // ========== LIVE VISITOR COUNTER ==========
+        let visitorCount = localStorage.getItem('visitorCount') || Math.floor(Math.random() * 800) + 200;
+        visitorCount++;
+        localStorage.setItem('visitorCount', visitorCount);
+        const counterDiv = document.createElement('div');
+        counterDiv.innerHTML = `<div style="position:fixed;bottom:20px;left:20px;z-index:1000;background:rgba(45,27,46,0.95);backdrop-filter:blur(10px);border-radius:50px;padding:8px 18px;border:1px solid #9c3ab0;"><span style="color:#c56be0;">👥</span> <span style="color:#4ade80;font-weight:bold;" id="liveCount">${visitorCount}</span> <span style="color:#b0a8b8;font-size:10px;">online</span></div>`;
+        document.body.appendChild(counterDiv);
+        let count = visitorCount;
+        setInterval(() => { count += Math.floor(Math.random() * 3); const ce = document.getElementById('liveCount'); if (ce) ce.innerText = count; }, 8000);
+
+        // ========== FLASH SALE BADGES (ONLY BADGES, NO PRICE CHANGE) ==========
+        const badges = ['🔥 HOT', '⚡ SALE', '💥 LIMITED', '✨ NEW', '🎯 BEST', '⭐ TRENDING', '🎉 DEAL'];
+        setTimeout(() => {
+            document.querySelectorAll('.product-card, .card').forEach(product => {
+                if (Math.random() > 0.6 && !product.querySelector('.sale-badge')) {
+                    const badge = document.createElement('div');
+                    badge.className = 'sale-badge';
+                    badge.innerHTML = badges[Math.floor(Math.random() * badges.length)];
+                    badge.style.cssText = 'position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#ff6b6b,#ff4757);color:white;padding:4px 12px;border-radius:25px;font-size:11px;font-weight:bold;z-index:10;animation:bounce 1s infinite;';
+                    if (getComputedStyle(product).position === 'static') product.style.position = 'relative';
+                    product.appendChild(badge);
+                }
+            });
+        }, 600);
+
+        // ========== FACTS ROTATOR ==========
+        const facts = ["💡 Velvet was once more valuable than gold!", "🎯 First e-commerce sale happened in 1994!", "✨ Purple color represents luxury and royalty!", "📱 79% of smartphone users shop online!", "🎮 First online game sold was in 1995!", "🚀 SparkCart processes orders in milliseconds!", "💎 Our velvet theme is inspired by royal palaces!", "🛒 Cart abandonment rate is 69% worldwide!"];
+        let factIndex = 0;
+        const factDiv = document.createElement('div');
+        factDiv.innerHTML = `<div style="position:fixed;bottom:100px;right:20px;z-index:1000;background:rgba(45,27,46,0.95);border-radius:20px;padding:10px 18px;border-left:4px solid #c56be0;max-width:280px;"><div style="display:flex;gap:10px;"><span style="font-size:22px;">💡</span><span id="factText" style="color:#e6e0f0;font-size:11px;">${facts[0]}</span></div></div>`;
+        document.body.appendChild(factDiv);
+        setInterval(() => { factIndex = (factIndex + 1) % facts.length; const ft = document.getElementById('factText'); if (ft) { ft.style.opacity = '0'; setTimeout(() => { ft.innerText = facts[factIndex]; ft.style.opacity = '1'; }, 300); } }, 6000);
+
+        // ========== SCROLL PROGRESS BAR ==========
+        const progressBar = document.createElement('div');
+        progressBar.innerHTML = `<div style="position:fixed;top:0;left:0;width:0%;height:3px;background:linear-gradient(90deg,#c56be0,#4ade80);z-index:10000;transition:width 0.1s;" id="scrollProgress"></div>`;
+        document.body.appendChild(progressBar);
+        window.addEventListener('scroll', () => { const winScroll = document.body.scrollTop || document.documentElement.scrollTop; const height = document.documentElement.scrollHeight - document.documentElement.clientHeight; const scrolled = (winScroll / height) * 100; const prog = document.getElementById('scrollProgress'); if (prog) prog.style.width = scrolled + '%'; });
+
+        console.log("✅ All features loaded with fixed price handling (no duplicates, clean strike-through)!");
+    });
+    </script>
+    <!-- ========== END ALL FEATURES ========== -->
+
 </body>
 </html>

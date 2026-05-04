@@ -1,14 +1,214 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1>Checkout</h1>
-<p><strong>Total amount: ₹{{ "%.2f"|format(total) }}</strong></p>
-<form method="POST">
-    {{ form.hidden_tag() }}
-    <div class="mb-3">
-        {{ form.address.label(class="form-label") }}
-        {{ form.address(class="form-control", rows=3) }}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="mb-4">🛒 Checkout</h2>
+            
+           
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endwith %}
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">📋 Order Items</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{% if item.product.image_filename %}{{ url_for('static', filename='product_pics/' + item.product.image_filename) }}{% else %}{{ item.product.image_url }}{% endif %}" class="cart-item-img me-3" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                                            <div>
+                                                <strong>{{ item.product.name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ item.product.category|capitalize }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ "%.2f"|format(item.product.price) }}</td>
+                                    <td>₹{{ "%.2f"|format(item.product.price * item.quantity) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="order-summary shadow-sm p-4" style="background-color: var(--bg-secondary); border-radius: 12px;">
+                <h4 class="mb-3">💰 Order Summary</h4>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal</span>
+                    <span>₹{{ "%.2f"|format(total) }}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping</span>
+                    <span class="text-success">Free</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tax (GST)</span>
+                    <span>Included</span>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Total Amount</strong>
+                    <strong class="text-success">₹{{ "%.2f"|format(total) }}</strong>
+                </div>
+                
+                
+                <button id="rzp-button" class="btn btn-primary w-100 py-2" style="background-color: var(--primary-blue); border: none;">
+                    💳 Pay with Razorpay
+                </button>
+                
+                <a href="{{ url_for('cart') }}" class="btn btn-outline-secondary w-100 mt-2">
+                    ← Back to Cart
+                </a>
+            </div>
+        </div>
     </div>
-    {{ form.submit(class="btn btn-success") }}
-    <a href="{{ url_for('view_cart') }}" class="btn btn-secondary">Back to Cart</a>
-</form>
+</div>
+
+
+<style>
+    .order-summary {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .cart-item-img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+        background-color: var(--bg-secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .order-summary {
+            position: static;
+            margin-top: 20px;
+        }
+    }
+</style>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    document.getElementById('rzp-button').onclick = function(e) {
+        e.preventDefault();
+        
+       
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Processing...';
+        
+        fetch('/create-order', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' } 
+        })
+        .then(response => response.json())
+        .then(orderData => {
+            if (orderData.error) {
+                alert(orderData.error);
+                btn.disabled = false;
+                btn.innerHTML = '💳 Pay with Razorpay';
+                return;
+            }
+            
+            var options = {
+                "key": "{{ razorpay_key_id }}",
+                "amount": orderData.amount,
+                "currency": orderData.currency || "INR",
+                "name": "SparkCart",
+                "description": "Order Payment",
+                "image": "https://via.placeholder.com/100",
+                "order_id": orderData.id,
+                "handler": function (response) {
+                    fetch('/verify-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            window.location.href = "{{ url_for('order_confirmation') }}";
+                        } else {
+                            alert('Payment verification failed: ' + (data.error || 'Unknown error'));
+                            btn.disabled = false;
+                            btn.innerHTML = '💳 Pay with Razorpay';
+                        }
+                    })
+                    .catch(() => {
+                        alert('Verification error. Please contact support.');
+                        btn.disabled = false;
+                        btn.innerHTML = '💳 Pay with Razorpay';
+                    });
+                },
+                "prefill": {
+                    "name": "{{ current_user.username if current_user.is_authenticated else '' }}",
+                    "email": "{{ current_user.email if current_user.is_authenticated else '' }}"
+                },
+                "theme": { 
+                    "color": "var(--primary-blue, #2874f0)" 
+                },
+                "modal": { 
+                    "ondismiss": () => {
+                        alert('Payment cancelled.');
+                        btn.disabled = false;
+                        btn.innerHTML = '💳 Pay with Razorpay';
+                    }
+                }
+            };
+            
+            var rzp = new Razorpay(options);
+            
+            rzp.on('payment.failed', (response) => {
+                alert('Payment failed: ' + response.error.description);
+                btn.disabled = false;
+                btn.innerHTML = '💳 Pay with Razorpay';
+            });
+            
+            rzp.open();
+        })
+        .catch(error => { 
+            console.error(error); 
+            alert('Unable to initiate payment. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '💳 Pay with Razorpay';
+        });
+    };
+</script>
 {% endblock %}

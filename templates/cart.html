@@ -1,58 +1,63 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1 class="mb-4">🛒 Your Shopping Cart</h1>
-
-{% if cart_items %}
-<div class="table-responsive">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart_items %}
-            <tr>
-                <td data-label="Product">{{ item.product.name }}</td>
-                <td data-label="Quantity">
-                    <div class="quantity-control d-flex align-items-center gap-2">
-                        <a href="{{ url_for('update_cart', product_id=item.product.id, quantity=item.quantity-1) }}" class="btn btn-sm btn-outline-secondary">−</a>
-                        <span class="mx-2">{{ item.quantity }}</span>
-                        <a href="{{ url_for('update_cart', product_id=item.product.id, quantity=item.quantity+1) }}" class="btn btn-sm btn-outline-secondary">+</a>
-                    </div>
-                </td>
-                <td data-label="Price">₹{{ "%.2f"|format(item.product.price) }}</td>
-                <td data-label="Total">₹{{ "%.2f"|format(item.total) }}</td>
-                <td data-label="Actions">
-                    <a href="{{ url_for('remove_from_cart', product_id=item.product.id) }}" class="btn btn-danger btn-sm">Remove</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
-                <td colspan="2"><strong>₹{{ "%.2f"|format(total) }}</strong></td>
-            </tr>
-        </tfoot>
-    </table>
+<div class="container mt-4">
+    <h2 class="mb-4">🛒 Your Shopping Cart</h2>
+    
+    {% if cart_items %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td data-label="Product">
+                        <div class="d-flex align-items-center">
+                            <img src="{% if item.product.image_filename %}{{ url_for('static', filename='product_pics/' + item.product.image_filename) }}{% else %}{{ item.product.image_url }}{% endif %}" 
+                                 alt="{{ item.product.name }}" 
+                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-right: 10px;">
+                            <strong>{{ item.product.name }}</strong>
+                        </div>
+                    </td>
+                    <td data-label="Price">₹{{ "%.2f"|format(item.product.price) }}</td>
+                    <td data-label="Quantity">
+                        <form action="{{ url_for('update_cart', item_id=item.id) }}" method="POST" class="d-flex align-items-center gap-2">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" style="width: 70px; padding: 5px;" class="form-control form-control-sm">
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+                    </td>
+                    <td data-label="Total">₹{{ "%.2f"|format(item.product.price * item.quantity) }}</td>
+                    <td data-label="Action">
+                        <form action="{{ url_for('remove_from_cart', item_id=item.id) }}" method="POST">
+                            <a href="{{ url_for('remove_from_cart', item_id=item.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Remove this item?')">Remove</a>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="order-total mt-4 text-end">
+        <h3>Grand Total: <span class="text-success">₹{{ "%.2f"|format(total) }}</span></h3>
+        <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-lg mt-3">Proceed to Checkout →</a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg mt-3 ms-2">Continue Shopping</a>
+    </div>
+    
+    {% else %}
+    <div class="alert alert-info text-center">
+        <h4>🛍️ Your cart is empty!</h4>
+        <p>Looks like you haven't added any items yet.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Start Shopping</a>
+    </div>
+    {% endif %}
 </div>
-
-<div class="d-flex justify-content-between mt-3">
-    <a href="{{ url_for('index') }}" class="btn btn-secondary">← Continue Shopping</a>
-    <a href="{{ url_for('checkout') }}" class="btn btn-success">Proceed to Checkout →</a>
-</div>
-
-{% else %}
-<div class="alert alert-info text-center">
-    <h4>Your cart is empty!</h4>
-    <p>Looks like you haven't added anything yet.</p>
-    <a href="{{ url_for('index') }}" class="btn btn-primary">Start Shopping</a>
-</div>
-{% endif %}
 {% endblock %}

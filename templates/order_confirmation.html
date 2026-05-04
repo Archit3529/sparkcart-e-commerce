@@ -1,14 +1,48 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1>Order Confirmation</h1>
-<p>Thank you for your order! Order #{{ order.id }}</p>
-<p>Date: {{ order.date.strftime('%Y-%m-%d %H:%M') }}</p>
-<p>Total: ₹{{ "%.2f"|format(order.total) }}</p>
-<h3>Items:</h3>
-<ul class="list-group">
-    {% for item in order.items %}
-    <li class="list-group-item">{{ item.product.name }} x {{ item.quantity }} = ₹{{ "%.2f"|format(item.price * item.quantity) }}</li>
-    {% endfor %}
-</ul>
-<a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+<div class="container mt-4">
+    <div class="confirmation-card text-center">
+        <h1 class="text-success">✅ Order Confirmed!</h1>
+        <p class="lead">Thank you for your order!</p>
+        
+        <div class="order-details text-start mt-4">
+            <h4>📋 Order Summary</h4>
+            <hr>
+            
+            <p><strong>Order ID:</strong> #{{ order.id }}</p>
+            <p><strong>Date:</strong> {{ order.order_date.strftime('%d-%m-%Y %H:%M') }}</p>
+            <p><strong>Total Amount:</strong> <span class="text-success fw-bold">₹{{ "%.2f"|format(order.total_amount) }}</span></p>
+            <p><strong>Status:</strong> 
+                <span class="badge bg-success">{{ order.status }}</span>
+            </p>
+            
+            {% if order.address %}
+            <p><strong>Shipping Address:</strong> {{ order.address }}</p>
+            {% endif %}
+            
+            <h5 class="mt-4">🛒 Items Ordered:</h5>
+            <ul class="list-group mb-3">
+                {% for item in order.items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ item.product.name }}</strong>
+                        <small class="text-muted"> x {{ item.quantity }}</small>
+                    </div>
+                    <span>₹{{ "%.2f"|format(item.price * item.quantity) }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            <div class="order-total text-end">
+                <h5>Grand Total: <span class="text-success">₹{{ "%.2f"|format(order.total_amount) }}</span></h5>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">🛍️ Continue Shopping</a>
+            <a href="{{ url_for('orders') }}" class="btn btn-outline-secondary">📋 View My Orders</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

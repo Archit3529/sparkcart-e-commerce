@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">📋 My Orders</h2>
+    
+    {% if orders %}
+        {% for order in orders %}
+        <div class="category-section mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <h4>Order #{{ order.id }}</h4>
+                <div>
+                  
+                    {% if order.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark">⏳ Pending</span>
+                    {% elif order.status == 'Paid' %}
+                        <span class="badge bg-success">✅ Paid</span>
+                    {% elif order.status == 'Shipped' %}
+                        <span class="badge bg-info text-dark">🚚 Shipped</span>
+                    {% elif order.status == 'Delivered' %}
+                        <span class="badge bg-primary">📦 Delivered</span>
+                    {% elif order.status == 'Cancelled' %}
+                        <span class="badge bg-danger">❌ Cancelled</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ order.status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <p class="text-secondary mt-2">
+                <i class="far fa-calendar-alt"></i> Placed on: {{ order.order_date.strftime('%d-%m-%Y %H:%M') }}
+            </p>
+            
+            <p><strong>📍 Shipping Address:</strong> {{ order.address or 'Not provided' }}</p>
+            
+            <hr>
+            
+            <h5>🛒 Items:</h5>
+            <ul class="list-group list-group-flush mb-3">
+                {% for item in order.items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                    <div>
+                        <strong>{{ item.product.name }}</strong>
+                        <small class="text-secondary"> x{{ item.quantity }}</small>
+                    </div>
+                    <span class="fw-bold">₹{{ "%.2f"|format(item.price * item.quantity) }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            <div class="order-total mt-3">
+                <strong>💰 Total Amount: ₹{{ "%.2f"|format(order.total_amount) }}</strong>
+            </div>
+            
+        
+            <div class="mt-3">
+                <a href="{{ url_for('order_confirmation', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">
+                    View Order Details →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info text-center">
+            <h4>🛍️ No orders yet!</h4>
+            <p>You haven't placed any orders. Start shopping now!</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

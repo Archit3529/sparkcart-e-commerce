@@ -1,15 +1,35 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="row">
     <div class="col-md-6">
-        <img src="{{ product.image_url }}" class="img-fluid" alt="{{ product.name }}">
+        <img src="{% if product.image_filename %}{{ url_for('static', filename='product_pics/' + product.image_filename) }}{% else %}{{ product.image_url }}{% endif %}" class="img-fluid product-detail-img" alt="{{ product.name }}">
     </div>
     <div class="col-md-6">
-        <h1>{{ product.name }}</h1>
-        <h3 class="text-success">₹{{ "%.2f"|format(product.price) }}</h3>
-        <p>{{ product.description }}</p>
-        <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-lg btn-success">Add to Cart</a>
-        <a href="{{ url_for('index') }}" class="btn btn-lg btn-secondary">Continue Shopping</a>
+        <h1 class="product-detail-title">{{ product.name }}</h1>
+        <p class="product-detail-description">{{ product.description }}</p>
+        <h3 class="product-detail-price text-success">₹{{ "%.2f"|format(product.price) }}</h3>
+        
+        
+        {% if product.stock > 0 %}
+            <p class="text-success">✅ In Stock ({{ product.stock }} available)</p>
+            
+            <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.quantity.label(class="form-label") }}
+                    {{ form.quantity(class="form-control", style="width: 100px;") }}
+                </div>
+                {{ form.submit(class="btn btn-success btn-lg") }}
+            </form>
+          
+            
+        {% else %}
+            <p class="text-danger">❌ Out of Stock</p>
+            <button class="btn btn-secondary btn-lg" disabled>Out of Stock</button>
+        {% endif %}
+        
+        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg mt-2">Continue Shopping</a>
     </div>
 </div>
 {% endblock %}

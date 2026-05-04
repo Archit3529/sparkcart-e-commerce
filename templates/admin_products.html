@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>🛠️ Secret Admin – Product Price Editor</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Product Name</th>
+                <th>Current Price (₹)</th>
+                <th>New Price (₹)</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <form method="POST" action="{{ url_for('secret_admin_update', product_id=product.id) }}">
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.category }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>₹{{ "%.2f"|format(product.price) }}</td>
+                    <td><input type="number" name="price" step="1" class="form-control" style="width:120px" required></td>
+                    <td><button type="submit" class="btn btn-primary btn-sm">Update</button></td>
+                </tr>
+            </form>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back to shop</a>
+</div>
+{% endblock %}

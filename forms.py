@@ -1,12 +1,13 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField
-from wtforms.validators import DataRequired, Email, Length, ValidationError
+from wtforms.validators import DataRequired, Email, Length, ValidationError, NumberRange, EqualTo
 from models import User
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=80)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -24,6 +25,10 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+class AddToCartForm(FlaskForm):
+    quantity = IntegerField('Quantity', validators=[DataRequired(), NumberRange(min=1, message='Quantity must be at least 1')], default=1)
+    submit = SubmitField('Add to Cart')
+
 class CheckoutForm(FlaskForm):
-    address = TextAreaField('Shipping Address', validators=[DataRequired()])
+    address = TextAreaField('Shipping Address', validators=[DataRequired(), Length(min=10, message='Please enter a complete address')])
     submit = SubmitField('Place Order')

@@ -1,12 +1,427 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1>Register</h1>
-<form method="POST">
-    {{ form.hidden_tag() }}
-    <div class="mb-3">{{ form.username.label(class="form-label") }} {{ form.username(class="form-control") }}</div>
-    <div class="mb-3">{{ form.email.label(class="form-label") }} {{ form.email(class="form-control") }}</div>
-    <div class="mb-3">{{ form.password.label(class="form-label") }} {{ form.password(class="form-control") }}</div>
-    {{ form.submit(class="btn btn-primary") }}
-</form>
-<p class="mt-3">Already registered? <a href="{{ url_for('login') }}">Login here</a>.</p>
+<style>
+    @keyframes velvetShimmer {
+        0% { background-position: -100% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
+    @keyframes keyFloat {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(5deg); }
+    }
+    
+    @keyframes softPulse {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.8; }
+    }
+    
+    .velvet-register-container {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(145deg, #2d1b2e 0%, #1a0f1c 50%, #0d0710 100%);
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        margin: 30px 0;
+        padding: 60px 20px;
+    }
+    
+    /* Velvet Texture Overlay */
+    .velvet-register-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(circle at 25% 40%, rgba(156, 58, 176, 0.08) 2%, transparent 2.5%);
+        background-size: 35px 35px;
+        pointer-events: none;
+    }
+    
+    /* Floating Keys */
+    .floating-keys {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+    
+    .floating-key {
+        position: absolute;
+        font-size: 30px;
+        opacity: 0.15;
+        animation: keyFloat 8s ease-in-out infinite;
+        filter: drop-shadow(0 0 5px rgba(156, 58, 176, 0.3));
+    }
+    
+    .key-1 { top: 15%; left: 5%; animation-delay: 0s; transform: rotate(-15deg); }
+    .key-2 { bottom: 20%; right: 8%; animation-delay: 1.5s; transform: rotate(10deg); }
+    .key-3 { top: 45%; right: 12%; animation-delay: 0.8s; transform: rotate(-5deg); }
+    .key-4 { bottom: 35%; left: 10%; animation-delay: 2.2s; transform: rotate(20deg); }
+    .key-5 { top: 70%; left: 20%; animation-delay: 1s; transform: rotate(-10deg); }
+    
+    /* Velvet Particles */
+    .velvet-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+    
+    .v-particle {
+        position: absolute;
+        background: radial-gradient(circle, #c56be0, #9c3ab0);
+        border-radius: 50%;
+        animation: softPulse 4s ease-in-out infinite;
+    }
+    
+    .v-particle-1 { width: 3px; height: 3px; top: 20%; left: 15%; animation-delay: 0s; }
+    .v-particle-2 { width: 4px; height: 4px; top: 35%; right: 20%; animation-delay: 0.6s; }
+    .v-particle-3 { width: 2px; height: 2px; bottom: 25%; left: 30%; animation-delay: 1.2s; }
+    .v-particle-4 { width: 5px; height: 5px; top: 60%; right: 35%; animation-delay: 1.8s; }
+    .v-particle-5 { width: 3px; height: 3px; bottom: 45%; left: 55%; animation-delay: 2.4s; }
+    
+    /* Main Card */
+    .velvet-card {
+        position: relative;
+        z-index: 2;
+        background: rgba(45, 27, 46, 0.95);
+        backdrop-filter: blur(5px);
+        border-radius: 30px;
+        padding: 50px;
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid rgba(156, 58, 176, 0.3);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        transition: all 0.4s ease;
+    }
+    
+    .velvet-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(156, 58, 176, 0.6);
+        box-shadow: 0 35px 70px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(156, 58, 176, 0.2);
+    }
+    
+    /* Velvet Border */
+    .velvet-border {
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(145deg, #9c3ab0, #6b1e7a, #c56be0, #9c3ab0);
+        background-size: 300% 300%;
+        border-radius: 32px;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.4s;
+        animation: velvetShimmer 3s ease infinite;
+    }
+    
+    .velvet-card:hover .velvet-border {
+        opacity: 0.6;
+    }
+    
+    /* Header */
+    .velvet-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+    
+    .velvet-icon {
+        font-size: 55px;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 0 15px rgba(156, 58, 176, 0.6));
+        animation: keyFloat 3s ease-in-out infinite;
+    }
+    
+    .velvet-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #c56be0, #9c3ab0, #7b2d91);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+    
+    .velvet-subtitle {
+        color: #b0a8b8;
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+    
+    .velvet-divider {
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #9c3ab0, #c56be0, #9c3ab0, transparent);
+        margin: 15px auto 0;
+    }
+    
+    /* Input Fields */
+    .velvet-input-group {
+        margin-bottom: 20px;
+    }
+    
+    .velvet-input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #c56be0;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+    
+    .input-with-icon {
+        position: relative;
+    }
+    
+    .input-with-icon input {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(15, 7, 20, 0.8);
+        border: 1px solid rgba(156, 58, 176, 0.3);
+        border-radius: 12px;
+        color: #e6e0f0;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .input-with-icon input:focus {
+        outline: none;
+        border-color: #c56be0;
+        box-shadow: 0 0 20px rgba(156, 58, 176, 0.3);
+        background: rgba(15, 7, 20, 1);
+    }
+    
+    .input-with-icon input::placeholder {
+        color: rgba(176, 168, 184, 0.4);
+    }
+    
+    .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.1rem;
+        color: rgba(156, 58, 176, 0.6);
+        pointer-events: none;
+    }
+    
+    /* Error Messages */
+    .error-message {
+        color: #ff6b6b;
+        font-size: 0.75rem;
+        margin-top: 5px;
+    }
+    
+    /* Velvet Button */
+    .velvet-btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #7b2d91, #9c3ab0, #c56be0);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        position: relative;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+    
+    .velvet-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .velvet-btn:hover::before {
+        left: 100%;
+    }
+    
+    .velvet-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(156, 58, 176, 0.4);
+    }
+    
+    /* Register Link */
+    .velvet-login {
+        text-align: center;
+        margin-top: 25px;
+        color: #b0a8b8;
+    }
+    
+    .velvet-login a {
+        color: #c56be0;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .velvet-login a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: #c56be0;
+        transition: width 0.3s;
+    }
+    
+    .velvet-login a:hover::after {
+        width: 100%;
+    }
+    
+    /* Footer Note */
+    .velvet-note {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.7rem;
+        color: rgba(176, 168, 184, 0.4);
+        letter-spacing: 1px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .velvet-card {
+            padding: 35px 25px;
+        }
+        .velvet-title {
+            font-size: 1.4rem;
+        }
+        .velvet-icon {
+            font-size: 40px;
+        }
+        .floating-key {
+            font-size: 20px;
+        }
+    }
+</style>
+
+<div class="velvet-register-container">
+    <!-- Floating Keys -->
+    <div class="floating-keys">
+        <div class="floating-key key-1">🗝️</div>
+        <div class="floating-key key-2">🔑</div>
+        <div class="floating-key key-3">🗝️</div>
+        <div class="floating-key key-4">🔑</div>
+        <div class="floating-key key-5">🗝️</div>
+    </div>
+    
+    <!-- Velvet Particles -->
+    <div class="velvet-particles">
+        <div class="v-particle v-particle-1"></div>
+        <div class="v-particle v-particle-2"></div>
+        <div class="v-particle v-particle-3"></div>
+        <div class="v-particle v-particle-4"></div>
+        <div class="v-particle v-particle-5"></div>
+    </div>
+    
+    <!-- Main Register Card -->
+    <div class="velvet-card">
+        <div class="velvet-border"></div>
+        
+        <div class="velvet-header">
+            <div class="velvet-icon">🗝️🔑🗝️</div>
+            <h2 class="velvet-title">CREATE ACCOUNT</h2>
+            <div class="velvet-divider"></div>
+            <p class="velvet-subtitle">Get your SparkCart key to luxury shopping</p>
+        </div>
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="velvet-input-group">
+                <label>👤 USERNAME</label>
+                <div class="input-with-icon">
+                    {{ form.username(placeholder="Choose a username") }}
+                    <span class="input-icon">👤</span>
+                </div>
+                {% if form.username.errors %}
+                    <div class="error-message">
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="velvet-input-group">
+                <label>📧 EMAIL</label>
+                <div class="input-with-icon">
+                    {{ form.email(placeholder="your@velvet.com") }}
+                    <span class="input-icon">📧</span>
+                </div>
+                {% if form.email.errors %}
+                    <div class="error-message">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="velvet-input-group">
+                <label>🔒 PASSWORD</label>
+                <div class="input-with-icon">
+                    {{ form.password(placeholder="••••••••") }}
+                    <span class="input-icon">🔒</span>
+                </div>
+                {% if form.password.errors %}
+                    <div class="error-message">
+                        {% for error in form.password.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="velvet-input-group">
+                <label>✓ CONFIRM PASSWORD</label>
+                <div class="input-with-icon">
+                    {{ form.confirm_password(placeholder="Confirm your password") }}
+                    <span class="input-icon">✓</span>
+                </div>
+                {% if form.confirm_password.errors %}
+                    <div class="error-message">
+                        {% for error in form.confirm_password.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="velvet-btn">
+                🔓 Create Account 🔓
+            </button>
+        </form>
+        
+        <div class="velvet-login">
+            Already have a SparkCart key? <a href="{{ url_for('login') }}">Login here →</a>
+        </div>
+        
+        <div class="velvet-note">
+            ✨ Join the SparkCart community today ✨
+        </div>
+    </div>
+</div>
 {% endblock %}

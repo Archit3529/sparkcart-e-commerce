@@ -1,31 +1,262 @@
-/* ============================================
-   COMPLETE E-COMMERCE CSS WITH LIGHT/DARK THEME
-   ============================================ */
+
 
 /* ---------- Google Fonts ---------- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+/* ========== VELVET THEME VARIABLES ========== */
+:root {
+    /* Velvet Color Palette */
+    --velvet-bg-primary: #1a0f1c;
+    --velvet-bg-secondary: #2d1b2e;
+    --velvet-bg-card: rgba(45, 27, 46, 0.95);
+    --velvet-border: rgba(156, 58, 176, 0.3);
+    --velvet-accent: #c56be0;
+    --velvet-accent-dark: #9c3ab0;
+    --velvet-text-primary: #e6e0f0;
+    --velvet-text-secondary: #b0a8b8;
+    --velvet-glow: 0 0 20px rgba(156, 58, 176, 0.3);
+    --velvet-gradient: linear-gradient(135deg, #7b2d91, #9c3ab0, #c56be0);
+    --velvet-gradient-bg: linear-gradient(145deg, #2d1b2e 0%, #1a0f1c 50%, #0d0710 100%);
+}
 
-/* ========== LIGHT THEME (DEFAULT) ========== */
+/* Apply Velvet Theme to Body */
+body {
+    background: var(--velvet-gradient-bg) !important;
+    color: var(--velvet-text-primary) !important;
+    position: relative;
+}
+
+/* Velvet Texture Overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle at 25% 40%, rgba(156, 58, 176, 0.08) 2%, transparent 2.5%);
+    background-size: 35px 35px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Velvet Particles Animation */
+@keyframes velvetFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+    50% { transform: translateY(-15px) rotate(5deg); opacity: 0.8; }
+}
+
+@keyframes velvetPulse {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* Floating Particles */
+.velvet-particle {
+    position: fixed;
+    background: radial-gradient(circle, #c56be0, #9c3ab0);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    animation: velvetPulse 4s ease-in-out infinite;
+}
+
+/* Navbar Velvet Style */
+.navbar {
+    background: rgba(26, 15, 28, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--velvet-border);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+    color: var(--velvet-text-primary) !important;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--velvet-accent) !important;
+    text-shadow: 0 0 5px var(--velvet-accent);
+}
+
+/* Category Sections Velvet Style */
+.category-section {
+    background: var(--velvet-bg-card);
+    backdrop-filter: blur(5px);
+    border-radius: 20px;
+    border: 1px solid var(--velvet-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.category-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), var(--velvet-glow);
+    border-color: var(--velvet-accent-dark);
+}
+
+.category-section h2 {
+    border-left: 4px solid var(--velvet-accent);
+    color: var(--velvet-text-primary);
+}
+
+/* Product Cards Velvet Style */
+.card {
+    background: var(--velvet-bg-card);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--velvet-border);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--velvet-glow);
+    border-color: var(--velvet-accent);
+}
+
+.card-title {
+    color: var(--velvet-text-primary);
+}
+
+.card-text.price {
+    color: #c56be0;
+    font-weight: bold;
+}
+
+.card .btn-primary {
+    background: linear-gradient(135deg, #7b2d91, #9c3ab0);
+    border: none;
+}
+
+.card .btn-primary:hover {
+    background: linear-gradient(135deg, #9c3ab0, #c56be0);
+}
+
+.card .btn-success {
+    background: #6b1e7a;
+    border: none;
+}
+
+.card .btn-success:hover {
+    background: #9c3ab0;
+}
+
+/* Buttons Velvet Style */
+.btn-primary {
+    background: linear-gradient(135deg, #7b2d91, #9c3ab0);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #9c3ab0, #c56be0);
+    transform: translateY(-2px);
+    box-shadow: var(--velvet-glow);
+}
+
+.btn-success {
+    background: #6b1e7a;
+    border: none;
+}
+
+.btn-success:hover {
+    background: #9c3ab0;
+    transform: translateY(-2px);
+}
+
+/* Cart Table Velvet Style */
+.table {
+    background: var(--velvet-bg-card);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--velvet-border);
+    border-radius: 15px;
+    color: var(--velvet-text-primary);
+}
+
+.table thead th {
+    background: rgba(107, 30, 122, 0.5);
+    color: var(--velvet-text-primary);
+    border-bottom: 1px solid var(--velvet-border);
+}
+
+.table tbody td {
+    border-bottom: 1px solid var(--velvet-border);
+}
+
+/* Flash Messages */
+.alert {
+    background: var(--velvet-bg-card);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--velvet-border);
+    border-left: 4px solid var(--velvet-accent);
+    color: var(--velvet-text-primary);
+}
+
+/* Order Summary */
+.order-summary, .confirmation-card {
+    background: var(--velvet-bg-card);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--velvet-border);
+    border-radius: 20px;
+}
+
+.order-total {
+    color: #c56be0;
+    border-top: 2px solid var(--velvet-border);
+}
+
+/* Footer Velvet Style */
+.footer {
+    background: rgba(26, 15, 28, 0.95) !important;
+    border-top: 1px solid var(--velvet-border);
+    color: var(--velvet-text-secondary);
+}
+
+/* Form Inputs */
+.form-control, textarea, input {
+    background: rgba(15, 7, 20, 0.8);
+    border: 1px solid var(--velvet-border);
+    color: var(--velvet-text-primary);
+}
+
+.form-control:focus, textarea:focus, input:focus {
+    background: rgba(15, 7, 20, 1);
+    border-color: var(--velvet-accent);
+    box-shadow: 0 0 15px rgba(156, 58, 176, 0.3);
+    color: var(--velvet-text-primary);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    background: var(--velvet-bg-secondary);
+    border: 1px solid var(--velvet-border);
+}
+
+.dropdown-item {
+    color: var(--velvet-text-primary);
+}
+
+.dropdown-item:hover {
+    background: rgba(156, 58, 176, 0.3);
+    color: var(--velvet-accent);
+}
+/*  LIGHT THEME */
 :root {
     --bg-primary: #ffffff;
     --bg-secondary: #f8f9fa;
     --bg-card: #ffffff;
     --text-primary: #212529;
-    --text-secondary: #565959;
-    --border-color: #e0e0e0;
-    --navbar-bg: #131921;
-    --navbar-text: #ffffff;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --navbar-bg: #f8f9fa;
+    --navbar-text: #000000;
     --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    --hover-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    --hover-shadow: 0 8px 24px rgba(0,0,0,0.12);
     --primary-blue: #2874f0;
     --primary-orange: #ff9900;
     --price-green: #388e3c;
-    --input-bg: #ffffff;
-    --alert-bg: #f8d7da;
-    --transition: all 0.2s ease;
 }
 
-/* ========== DARK THEME ========== */
+/*  DARK THEME  */
 body.dark-theme {
     --bg-primary: #0a0c10;
     --bg-secondary: #13161c;
@@ -40,24 +271,77 @@ body.dark-theme {
     --primary-blue: #3b82f6;
     --primary-orange: #f97316;
     --price-green: #4ade80;
-    --input-bg: #1a1f26;
-    --alert-bg: #2c1e1e;
+}
+/* Import Velvet Theme Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+/* Apply to body */
+body {
+    font-family: 'Quicksand', 'Segoe UI', sans-serif;
 }
 
-/* ---------- Global Reset ---------- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Headings - Royal Serif */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Navbar brand */
+.navbar-brand {
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+    font-size: 1.8rem;
+    letter-spacing: 0.05em;
+}
+
+/* Buttons */
+.btn {
+    font-family: 'Cinzel', serif;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+
+/* Product titles */
+.card-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+}
+
+/* Price text */
+.price, .card-text.price {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+}
+
+/* Category titles */
+.category-section h2 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    line-height: 1.5;
-    font-size: 14px;
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar {
+    background-color: var(--navbar-bg) !important;
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+    color: var(--navbar-text) !important;
+}
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+}
+
+.card-title {
+    color: var(--text-primary);
 }
 
 /* ---------- Typography ---------- */
@@ -213,7 +497,7 @@ a {
     margin-bottom: 0.5rem;
     color: var(--text-primary);
     display: -webkit-box;
-    
+    -webkit-line-clamp: 2;  
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: 2.4rem;
@@ -355,8 +639,6 @@ a {
     padding-top: 1rem;
     margin-top: 1rem;
 }
-
-/* ---------- Alerts (Flash Messages) ---------- */
 .alert {
     background-color: var(--alert-bg);
     border-left: 4px solid var(--primary-blue);
@@ -366,22 +648,61 @@ a {
     box-shadow: var(--card-shadow);
 }
 
-/* ---------- Theme Toggle Button ---------- */
-#themeToggle {
-    background-color: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    border-radius: 30px;
-    padding: 0.3rem 1rem;
-    transition: var(--transition);
+
+.theme-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 30px;
+    margin-left: 10px;
 }
 
-#themeToggle:hover {
-    background-color: var(--primary-blue);
-    color: white;
-    border-color: var(--primary-blue);
+.theme-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
 }
 
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2d323c;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "🌙";
+    font-size: 16px;
+    height: 26px;
+    width: 26px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+body.dark-theme .toggle-slider {
+    background-color: #3b82f6;
+}
+
+body.dark-theme .toggle-slider:before {
+    transform: translateX(30px);
+    content: "☀️";
+}
 /* ---------- Responsive (Mobile) ---------- */
 @media (max-width: 768px) {
     .navbar-brand {
@@ -408,7 +729,6 @@ a {
         overflow-x: auto;
     }
     
-    /* Stack cart table on mobile */
     .table thead {
         display: none;
     }
@@ -459,4 +779,149 @@ a {
     color: white;
     font-weight: 600;
     border-radius: 30px;
+}
+
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    background-color: white;
+    bottom: 4px;
+    content: "🌙";
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 26px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+    background-color: #3b82f6;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+    content: "☀️";
+}
+
+body.dark-theme .slider {
+    background-color: #4a5568;
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+/* ========== TEXT TO SPEECH BUTTON ========== */
+.speak-btn {
+    background: linear-gradient(135deg, #7b2d91, #9c3ab0);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.speak-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(156, 58, 176, 0.6);
+}
+
+.speak-btn.speaking {
+    animation: speakPulse 0.5s ease-in-out infinite;
+    background: linear-gradient(135deg, #c56be0, #7b2d91);
+}
+
+@keyframes speakPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); box-shadow: 0 0 20px #c56be0; }
+}
+
+/* Floating Voice Assistant */
+.voice-assistant {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.voice-btn {
+    background: linear-gradient(135deg, #7b2d91, #9c3ab0);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(156, 58, 176, 0.5);
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.voice-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(156, 58, 176, 0.8);
+}
+
+.voice-btn.listening {
+    animation: listeningPulse 1s ease-in-out infinite;
+    background: linear-gradient(135deg, #ff6b6b, #c56be0);
+}
+
+@keyframes listeningPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 10px #c56be0; }
+    50% { transform: scale(1.1); box-shadow: 0 0 30px #ff6b6b; }
+}
+
+.voice-feedback {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: rgba(45, 27, 46, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #c56be0;
+    white-space: nowrap;
+    border: 1px solid rgba(156, 58, 176, 0.3);
+    display: none;
 }

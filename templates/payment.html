@@ -4,17 +4,29 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
+            <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Complete Your Payment</h4>
+                    <h4 class="mb-0">💳 Complete Your Payment</h4>
                 </div>
                 <div class="card-body">
-                    <h5>Order Summary</h5>
-                    <p><strong>Order ID:</strong> {{ order.id }}</p>
-                    <p><strong>Total Amount:</strong> {{ total|inr }}</p>
+                    <h5>📋 Order Summary</h5>
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Order ID:</strong></td>
+                            <td>#{{ order.id }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Amount:</strong></td>
+                            <td class="text-success fw-bold">{{ total|inr }}</td>
+                        </tr>
+                    </table>
+                    <hr>
                     <button id="rzp-button" class="btn btn-success btn-lg w-100">
-                        Pay Now {{ total|inr }}
+                        💰 Pay Now {{ total|inr }}
                     </button>
+                    <a href="{{ url_for('cart') }}" class="btn btn-outline-secondary btn-lg w-100 mt-2">
+                        ← Back to Cart
+                    </a>
                 </div>
             </div>
         </div>
@@ -23,15 +35,23 @@
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+    // Disable button to prevent double payment
+    const rzpButton = document.getElementById('rzp-button');
+    
     var options = {
         "key": "{{ razorpay_key }}",
         "amount": {{ razorpay_order.amount }},
         "currency": "INR",
         "name": "SparkCart",
         "description": "Order #{{ order.id }}",
+        "image": "https://via.placeholder.com/100", 
         "order_id": "{{ razorpay_order.id }}",
         "handler": function (response) {
-            fetch('/payment-success', {
+           
+            rzpButton.disabled = true;
+            rzpButton.innerHTML = '⏳ Verifying Payment...';
+            
+            fetch('/verify-payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -44,27 +64,42 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    window.location.href = "/order/" + data.order_id;
+                if (data.status === 'success') {
+                    window.location.href = "/order-confirmation/" + data.order_id;
                 } else {
-                    alert("Payment verification failed. Please contact support.");
+                    alert("❌ Payment verification failed. Please contact support.");
+                    rzpButton.disabled = false;
+                    rzpButton.innerHTML = '💰 Pay Now {{ total|inr }}';
                 }
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert("An error occurred. Please try again.");
+                alert("⚠️ An error occurred. Please try again.");
+                rzpButton.disabled = false;
+                rzpButton.innerHTML = '💰 Pay Now {{ total|inr }}';
             });
         },
         "prefill": {
             "name": "{{ current_user.username }}",
-            "email": "{{ current_user.email }}"
+            "email": "{{ current_user.email }}",
+            "contact": ""  
+        "notes": {
+            "address": "SparkCart Order"
         },
         "theme": {
             "color": "#2874f0"
+        },
+        "modal": {
+            "ondismiss": function() {
+                console.log("Payment modal closed");
+                rzpButton.disabled = false;
+                rzpButton.innerHTML = '💰 Pay Now {{ total|inr }}';
+            }
         }
     };
     
     var rzp = new Razorpay(options);
+    
     document.getElementById('rzp-button').onclick = function(e) {
         rzp.open();
         e.preventDefault();

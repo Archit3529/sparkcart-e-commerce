@@ -1,21 +1,96 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1 class="mb-4">{{ category|capitalize }} Collection</h1>
-<div class="row">
-    {% for product in products %}
-    <div class="col-md-3 mb-4">
-        <div class="card h-100">
-            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text">₹{{ "%.2f"|format(product.price) }}</p>
-                <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary">View Details</a>
-                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-success">Add to Cart</a>
+<div class="container mt-4">
+    <h1 class="mb-4"style="color: #c56be0;">
+        {% if category == 'mens' %}👔
+        {% elif category == 'womens' %}👗
+        {% elif category == 'kids' %}🧸
+        {% elif category == 'mobiles' %}📱
+        {% elif category == 'electronics' %}💻
+        {% elif category == 'home_appliances' %}🏠
+        {% elif category == 'toys' %}🎮
+        {% endif %}
+        {{ category|capitalize }} 
+    </h1>
+    
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card h-100 product-card">
+                <div class="product-img-wrapper">
+                    <img src="{% if product.image_filename %}{{ url_for('static', filename='product_pics/' + product.image_filename) }}{% else %}{{ product.image_url }}{% endif %}" class="card-img-top" alt="{{ product.name }}" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text price">₹{{ "%.2f"|format(product.price) }}</p>
+                    
+                  
+                    {% if product.stock > 0 %}
+                        <small class="text-success">✓ In Stock ({{ product.stock }})</small>
+                    {% else %}
+                        <small class="text-danger">✗ Out of Stock</small>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 mt-2">
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        {% if product.stock > 0 %}
+                            <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-sm btn-success">Add to Cart 🛒</a>
+                        {% else %}
+                            <button class="btn btn-sm btn-secondary" disabled>Out of Stock</button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <h4>No products in this category yet!</h4>
+                <p>Check back soon for new arrivals.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Home</a>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    {% else %}
-    <p>No products in this category yet.</p>
-    {% endfor %}
 </div>
+
+<style>
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--hover-shadow);
+    }
+    
+    .product-img-wrapper {
+        height: 200px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bg-secondary);
+        padding: 1rem;
+    }
+    
+    .product-img-wrapper img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    
+    .price {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--price-green);
+    }
+    
+    @media (max-width: 768px) {
+        .product-img-wrapper {
+            height: 150px;
+        }
+    }
+</style>
 {% endblock %}

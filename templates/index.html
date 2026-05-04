@@ -1,31 +1,130 @@
 {% extends 'base.html' %}
-{% block content %}
-<h1 class="mb-4">Welcome to SparkCart</h1>
-<p class="lead">Shop by category</p>
 
-{% for cat_key, cat_name in categories.items() %}
-<div class="category-section mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>{{ cat_name }}</h2>
-        <a href="{{ url_for('category_view', category_name=cat_key) }}" class="btn btn-outline-primary btn-sm">View All {{ cat_name }} →</a>
-    </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        {% for product in category_products[cat_key][:4] %}  {# show only first 4 #}
-        <div class="col">
-            <div class="card h-100">
-                <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text">₹{{ "%.2f"|format(product.price) }}</p>
-                    <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary btn-sm">View</a>
-                    <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-success btn-sm">Add to Cart</a>
-                </div>
+{% block content %}
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4"  style="color: #c56be0;">🛍️ Welcome to SparkCart</h1>
+        <p class="lead">Your one-stop shop for everything!</p>
+        <hr class="my-4">
+        
+    
+    {% if categories %}
+        {% for cat_key, cat_name in categories.items() %}
+        <div class="category-section mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="section-title"style="color: #c56be0;">
+                    {% if cat_key == 'mens' %}👔
+                    {% elif cat_key == 'womens' %}👗
+                    {% elif cat_key == 'kids' %}🧸
+                    {% elif cat_key == 'mobiles' %}📱
+                    {% elif cat_key == 'electronics' %}💻
+                    {% elif cat_key == 'home_appliances' %}🏠
+                    {% elif cat_key == 'toys' %}🎮
+                    {% endif %}
+                    {{ cat_name }}
+                </h2>
+                <a href="{{ url_for('category_view', category_name=cat_key) }}" class="btn btn-outline-primary btn-sm rounded-pill">
+                    View All →
+                </a>
+            </div>
+            
+            <div class="row">
+                {% set category_products_list = category_products.get(cat_key, []) %}
+                {% if category_products_list %}
+                    {% for product in category_products_list[:4] %}
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card h-100 product-card">
+                            <div class="product-img-wrapper">
+                                <img src="{% if product.image_filename %}{{ url_for('static', filename='product_pics/' + product.image_filename) }}{% else %}{{ product.image_url }}{% endif %}" class="card-img-top" alt="{{ product.name }}" loading="lazy">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text price">₹{{ "%.2f"|format(product.price) }}</p>
+                                
+                              
+                                {% if product.stock > 0 %}
+                                    <small class="text-success">✓ In Stock</small>
+                                {% else %}
+                                    <small class="text-danger">✗ Out of Stock</small>
+                                {% endif %}
+                                
+                                <div class="d-grid gap-2 mt-2">
+                                   <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    {% if product.stock > 0 %}
+                                        <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-sm btn-success">Add to Cart 🛒</a>
+                                    {% else %}
+                                        <button class="btn btn-sm btn-secondary" disabled>Out of Stock</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            No products in {{ cat_name }} yet. Check back soon!
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
-        {% else %}
-        <div class="col">No products in this category yet.</div>
         {% endfor %}
-    </div>
+    {% else %}
+        <div class="alert alert-warning text-center">
+            <h4>No categories found!</h4>
+            <p>Please check your database connection.</p>
+        </div>
+    {% endif %}
 </div>
-{% endfor %}
+
+<style>
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        border-left: 4px solid var(--primary-blue);
+        padding-left: 15px;
+    }
+    
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--hover-shadow);
+    }
+    
+    .product-img-wrapper {
+        height: 200px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bg-secondary);
+        padding: 1rem;
+    }
+    
+    .product-img-wrapper img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    
+    .price {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--price-green);
+    }
+    
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 1.3rem;
+        }
+        .product-img-wrapper {
+            height: 150px;
+        }
+    }
+</style>
 {% endblock %}
