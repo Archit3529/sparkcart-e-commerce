@@ -440,6 +440,10 @@ def orders():
     user_orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.order_date.desc()).all()
     return render_template('orders.html', orders=user_orders)
 
+@app.route('/health')
+def health_check():
+    return 'OK', 200
+
 # -------------------------------
 # Authentication Routes
 # -------------------------------
